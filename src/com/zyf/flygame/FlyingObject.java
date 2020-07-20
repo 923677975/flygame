@@ -14,15 +14,16 @@ public abstract class FlyingObject {
     private int height;
     private int life;
 
-    FlyingObject(int x, int y, BufferedImage img,int life) {
+    FlyingObject(int x, int y, BufferedImage img, int life) {
         this.img = img;
         this.width = img.getWidth();
         this.height = img.getHeight();
         this.x = x;
         this.y = y;
-        this.life =life;
+        this.life = life;
     }
-    public int flyLife(){
+
+    public int flyLife() {
         return life--;
     }
 

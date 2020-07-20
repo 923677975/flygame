@@ -23,7 +23,6 @@ class GamePanel extends JPanel {
     public final int RUNING = 1;
     public final int PAUSE = 2;
     public final int GAMEOVER = 3;
-
     private int state = START;
 
     GamePanel() {
@@ -31,7 +30,7 @@ class GamePanel extends JPanel {
         flyBullet = new ArrayList<>();
     }
 
-
+    //定义一个计时器
     public void action() {
         //TimerTask  需要重复的代码
         //long 定时器开始的时间
@@ -44,35 +43,38 @@ class GamePanel extends JPanel {
                     createFlyingObject();
                     //创建敌机的移动
                     paintFlyMove();
-
                     //创建子弹
                     createBullet();
                     //创建子弹的移动
                     bulletMove();
-
-                    //越界
+                    //越界处理
                     outOfBoundsAction();
-
                     //碰撞
                     boonAction();
                 }
+                //重新绘制
                 repaint();
             }
         }, 1000, 30);
 
+        //创建一个鼠标的适配器
         MouseAdapter Mouse = new MouseAdapter() {
+            //重写鼠标点击
             @Override
             public void mouseClicked(MouseEvent e) {
+                //判断状态
                 if (state == START) {
                     state = RUNING;
-                } else if (state == GAMEOVER) {
+                } else if (state == GAMEOVER) {     //若游戏结束
                     state = START;
+                    //重新生成英雄机、飞行物、子弹
                     hero = new Hero();
                     flyings = new ArrayList<>();
                     flyBullet = new ArrayList<>();
                 }
             }
 
+            //重写鼠标移入窗口  实现继续游戏
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (state == PAUSE) {
@@ -80,6 +82,7 @@ class GamePanel extends JPanel {
                 }
             }
 
+            //重写鼠标移出窗口  实现暂停
             @Override
             public void mouseExited(MouseEvent e) {
                 if (state == RUNING) {
@@ -87,6 +90,7 @@ class GamePanel extends JPanel {
                 }
             }
 
+            //重写鼠标的移动   并实现使用鼠标控制英雄机
             @Override
             public void mouseMoved(MouseEvent e) {
                 if (state == RUNING) {
@@ -97,45 +101,16 @@ class GamePanel extends JPanel {
                 }
             }
         };
+        //接受鼠标事件
         this.addMouseListener(Mouse);
         this.addMouseMotionListener(Mouse);
     }
 
-    //显示绘图内容
-    @Override
-    public void paint(Graphics g) {
-        //清除绘画内容
-        super.paint(g);
-
-        g.drawImage(FlyGame.background, 0, 0, this);
-
-        paintFly(g);
-        paintBullet(g);
-
-        g.drawImage(hero.getImg(), hero.getX(), hero.getY(), this);
-
-        Font font = new Font("幼圆", 1, 20);
-        g.setFont(font);
-        g.drawString("life:" + hero.getLife(), 10, 20);
-        g.drawString("score:" + hero.getScore(), 10, 40);
-        //paintEmber(g);
-
-        switch (state) {
-            case START:
-                g.drawImage(FlyGame.start, 0, 0, this);
-                break;
-            case GAMEOVER:
-                g.drawImage(FlyGame.gameover, 0, 0, this);
-                break;
-            case PAUSE:
-                g.drawImage(FlyGame.pause, 0, 0, this);
-                break;
-        }
-    }
-
     //创建多个飞行物
     private void createFlyingObject() {
+        //利用flyingIndex来控制飞行物的生成数量
         if (flyingIndex % 10 == 0) {
+            //随机生成小飞机、大飞机、蜜蜂
             int ran = (int) (Math.random() * 20);
             FlyingObject fly;
             if (ran == 0) {
@@ -145,24 +120,17 @@ class GamePanel extends JPanel {
             } else {
                 fly = new AirPlane();
             }
+            //将对应的值存入ArrayList
             flyings.add(fly);
         }
         flyingIndex++;
     }
 
-    //飞行物移动
+    //实现飞行物移动
     private void paintFlyMove() {
         for (int i = 0; i < flyings.size(); i++) {
             FlyingObject fly = flyings.get(i);
-            fly.move();//设置飞行物的移动
-        }
-    }
-
-    //显示飞行物
-    private void paintFly(Graphics g) {
-        for (int i = 0; i < flyings.size(); i++) {
-            FlyingObject fly = flyings.get(i);
-            g.drawImage(fly.getImg(), fly.getX(), fly.getY(), this);
+            fly.move();
         }
     }
 
@@ -195,36 +163,13 @@ class GamePanel extends JPanel {
         flyingBullet++;
     }
 
-    //子弹移动
+    //实现子弹的移动
     private void bulletMove() {
         for (int i = 0; i < flyBullet.size(); i++) {
             FlyingObject fly = flyBullet.get(i);
-            fly.move();//设置飞行物的移动
+            fly.move();
         }
     }
-
-    //绘制子弹
-    private void paintBullet(Graphics g) {
-        for (int i = 0; i < flyBullet.size(); i++) {
-            FlyingObject fly = flyBullet.get(i);
-            g.drawImage(fly.getImg(), fly.getX(), fly.getY(), this);
-        }
-    }
-
-//    public void paintEmber(Graphics g){
-//        for (int i = 0; i < flyings.size(); i++) {
-//            FlyingObject fly = flyings.get(i);
-//            if(fly.getLife()==0){
-//                if(fly instanceof AirPlane){
-//                    g.drawImage(FlyGame.airplane_ember0, fly.getX(), fly.getY(), this);
-//                    g.drawImage(FlyGame.airplane_ember1, fly.getX(), fly.getY(), this);
-//                    g.drawImage(FlyGame.airplane_ember2, fly.getX(), fly.getY(), this);
-//                    g.drawImage(FlyGame.airplane_ember3, fly.getX(), fly.getY(), this);
-//                }
-//            }
-//
-//        }
-//    }
 
     //子弹和敌人的碰撞,以及英雄和敌机的碰撞
     private void boonAction() {
@@ -239,10 +184,12 @@ class GamePanel extends JPanel {
                     fly.flyLife();
                     if (fly.getLife() == 0) {
                         flyings.remove(j);
+                        //利用接口实现分数的累加
                         if (fly instanceof Enemy) {
                             Enemy enemy = (Enemy) fly;
                             hero.addScore(enemy.getScore());
                         }
+                        //利用接口实现奖励机制
                         if (fly instanceof Award) {
                             Award award = (Award) fly;
                             if (award.getAwardType() == Award.ADD_LIFE)
@@ -269,6 +216,55 @@ class GamePanel extends JPanel {
                     }
                 }
             }
+        }
+    }
+
+    //显示绘图内容
+    @Override
+    public void paint(Graphics g) {
+        //清除绘画内容
+        super.paint(g);
+        //绘制背景
+        g.drawImage(FlyGame.background, 0, 0, this);
+        //绘制飞行物
+        paintFly(g);
+        //绘制子弹
+        paintBullet(g);
+        //绘制英雄机的移动
+        g.drawImage(hero.getImg(), hero.getX(), hero.getY(), this);
+        //设置字体格式
+        Font font = new Font("幼圆", 1, 20);
+        g.setFont(font);
+        //在左上角输出文字
+        g.drawString("life:" + hero.getLife(), 10, 20);
+        g.drawString("score:" + hero.getScore(), 10, 40);
+        //判断窗口当前状态，并输出相应的图片
+        switch (state) {
+            case START:
+                g.drawImage(FlyGame.start, 0, 0, this);
+                break;
+            case GAMEOVER:
+                g.drawImage(FlyGame.gameover, 0, 0, this);
+                break;
+            case PAUSE:
+                g.drawImage(FlyGame.pause, 0, 0, this);
+                break;
+        }
+    }
+
+    //绘图显示飞行物
+    private void paintFly(Graphics g) {
+        for (int i = 0; i < flyings.size(); i++) {
+            FlyingObject fly = flyings.get(i);
+            g.drawImage(fly.getImg(), fly.getX(), fly.getY(), this);
+        }
+    }
+
+    //绘制子弹
+    private void paintBullet(Graphics g) {
+        for (int i = 0; i < flyBullet.size(); i++) {
+            FlyingObject fly = flyBullet.get(i);
+            g.drawImage(fly.getImg(), fly.getX(), fly.getY(), this);
         }
     }
 }

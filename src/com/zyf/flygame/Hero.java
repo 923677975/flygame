@@ -3,7 +3,7 @@ package com.zyf.flygame;
 import java.awt.image.BufferedImage;
 
 /**
- * 自己的飞机
+ * 英雄机
  */
 
 public class Hero extends FlyingObject {

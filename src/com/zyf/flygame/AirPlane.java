@@ -5,7 +5,7 @@ package com.zyf.flygame;
  */
 public class AirPlane extends FlyingObject implements Enemy {
 
-    private int score =5;
+    private int score = 5;
     private int speed;
 
     AirPlane() {

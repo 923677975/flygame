@@ -7,8 +7,8 @@ public class Bullet extends FlyingObject {
 
     private int speed;
 
-    public Bullet(int x,int y) {
-        super(x,y, FlyGame.bullet, 1);
+    public Bullet(int x, int y) {
+        super(x, y, FlyGame.bullet, 1);
         speed = 10;
     }
 
